@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stream.wikimedia.org/schema/recentchange/v1.json",
+  "title": "WikimediaRecentChange",
+  "description": "Raw ingress structural contract; normalization and quality policies are applied by QualityEngine.prepare_payload.",
+  "type": "object",
+  "required": [
+    "meta",
+    "type",
+    "wiki"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URI của schema MediaWiki"
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "dt",
+        "stream"
+      ],
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "stream": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "partition": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        }
+      }
+    },
+    "id": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "ID duy nhất của thay đổi gần đây (rc_id)"
+    },
+    "type": {
+      "type": "string",
+      "description": "Loại thay đổi"
+    },
+    "namespace": {
+      "description": "Raw optional value; invalid values warn and normalize to null before curated persistence."
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Tiêu đề trang"
+    },
+    "comment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Bình luận / tóm lược sửa đổi của người dùng"
+    },
+    "timestamp": {
+      "type": [
+        "integer",
+        "number",
+        "null"
+      ],
+      "description": "Unix timestamp (giây) tại thời điểm xảy ra sự kiện"
+    },
+    "user": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Tên người dùng hoặc địa chỉ IP"
+    },
+    "bot": {
+      "type": "boolean",
+      "default": false,
+      "description": "True nếu sửa đổi được thực hiện bởi bot"
+    },
+    "minor": {
+      "type": "boolean",
+      "default": false,
+      "description": "True nếu sửa đổi được đánh dấu là nhỏ (minor edit)"
+    },
+    "patrolled": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Trạng thái tuần tra sửa đổi"
+    },
+    "length": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "old": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "new": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "revision": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "old": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "new": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "server_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "server_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "server_script_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "wiki": {
+      "type": "string",
+      "description": "Mã wiki database (vd: viwiki, enwiki, wikidatawiki)"
+    },
+    "parsedcomment": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

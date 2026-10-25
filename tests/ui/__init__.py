@@ -1,0 +1,1 @@
+"""Streamlit simulated interaction tests."""

@@ -1,0 +1,43 @@
+groups:
+  - name: wikimedia_pipeline
+    rules:
+      - alert: ConsumerLagHigh
+        expr: sum by (topic) (wikimedia_consumer_lag_records) > 100
+        for: 30s
+        labels: {severity: HIGH, component: consumer}
+        annotations: {summary: "Consumer backlog above 100 records for 30 seconds"}
+      - alert: DatabaseErrors
+        expr: sum(increase(wikimedia_database_errors_total[2m])) > 0
+        for: 10s
+        labels: {severity: HIGH, component: database}
+        annotations: {summary: "Database operation failures observed"}
+      - alert: ArchiveChecksumMismatch
+        expr: max(wikimedia_archive_corrupted_files) > 0
+        for: 5s
+        labels: {severity: CRITICAL, component: archive}
+        annotations: {summary: "Registered archive integrity verification failed"}
+      - alert: QualityRejectionRate
+        expr: sum(rate(wikimedia_consumer_throughput_total{status="quarantined"}[2m])) / clamp_min(sum(rate(wikimedia_consumer_throughput_total{status=~"accepted|quarantined"}[2m])), 0.001) > 0.05
+        for: 1m
+        labels: {severity: MEDIUM, component: quality}
+        annotations: {summary: "Quarantined delivery rate exceeds five percent"}
+      - alert: IngestionDelayHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(wikimedia_ingestion_delay_seconds_bucket[5m]))) > 300
+        for: 1m
+        labels: {severity: MEDIUM, component: ingestion}
+        annotations: {summary: "Receipt-to-source delay p95 exceeds 300 seconds"}
+      - alert: PipelineTargetDown
+        expr: up{job=~"ingestor|quality|observability"} == 0
+        for: 30s
+        labels: {severity: HIGH, component: monitoring}
+        annotations: {summary: "Configured pipeline metrics target is unavailable"}
+      - alert: ObservabilityProbeFailed
+        expr: wikimedia_observability_probe_success == 0
+        for: 15s
+        labels: {severity: HIGH, component: monitoring}
+        annotations: {summary: "Background state probe is failing; gauges may be stale"}
+      - alert: SSEDisconnected
+        expr: wikimedia_ingest_connection_state == 0
+        for: 30s
+        labels: {severity: MEDIUM, component: ingestion}
+        annotations: {summary: "SSE connection disconnected for 30 seconds"}

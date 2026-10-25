@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+env/
+venv/
+ENV/
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Environment Variables & Secrets
+.env
+!.env.example
+
+# Local Data & Archives
+data/raw_archive/*
+!data/raw_archive/.gitkeep
+data/parquet/*
+!data/parquet/.gitkeep
+data/fault_runs/
+data/observability_runs/
+data/pipeline_runs/
+data/phase7_packaging/
+data/collection_runs/
+data/test_tmp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Personal documentation stays local; only the root README is public.
+*.md
+*.MD
+*.markdown
+*.mdown
+*.rst
+*.doc
+*.docx
+*.odt
+*.rtf
+*.pdf
+!/README.md
+
+# Generated CI report
+test-results.xml
