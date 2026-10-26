@@ -305,6 +305,77 @@ continue independently of the local PC.
 Automated CD is not implemented. Dependencies use ranges rather than a frozen lock. Host Mypy excludes
 Airflow DAG files; their runtime verification is separate.
 
+### Controlled load and live soak
+
+Recorded controlled-load result on a 4-logical-CPU GitHub runner (Python 3.12.15):
+
+| Measure | Result |
+|---|---:|
+| Input deliveries / source duration | 20,000 / 200.02 seconds |
+| Observed source rate | 99.99 deliveries/second |
+| Unique keys / duplicate deliveries | 18,000 / 2,000 |
+| Unique curated / expected quarantined | 17,000 / 1,000 |
+| Confirmed sink deliveries / final lag | 20,000 / 0 |
+| Maximum five-second sampled lag | 92 records |
+| Worker errors / retries | 0 / 0 |
+| Archive manifests / checksum verification | 40 / all passed |
+
+The [verified load run](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/runs/40265855443)
+passed all 11 reconciliation checks. Mean receipt-to-DB latency was 19.44 ms; process RSS
+after the first minute ranged from 69.29–69.43 MiB during source processing. Reconciliation
+allocations occur afterwards. These measurements show keeping up with this offered rate,
+not maximum throughput or proof of leak-free indefinite operation.
+
+A separate live Wikimedia soak on the local Docker internal network recorded:
+
+| Measure | Result |
+|---|---:|
+| Received / processed / confirmed sink deliveries | 35,959 / 35,959 / 35,959 |
+| Source duration / observed arrival rate | 900.58 seconds / 39.93 per second |
+| Unique curated / quarantined / duplicate deliveries | 35,959 / 0 / 0 |
+| Archive manifests / checksum verification | 72 / all passed |
+| Final lag / maximum five-second sampled lag | 0 / 22 records |
+| Worker errors / retries | 0 / 0 |
+| Mean receipt-to-DB latency | 44.20 ms |
+| Process RSS after first minute, during source processing | 74.59–75.95 MiB |
+
+All nine live reconciliation checks passed. The SSE server closed one connection mid-stream;
+the client retried and returned to HTTP 200 approximately two seconds later. Every event
+received by the application was reconciled; this does not prove completeness of all upstream
+Wikimedia events during the disconnect. The source and all run-owned consumers stopped after
+the bounded run. Raw archives, reports, metrics and five-second samples were retained locally.
+Local provenance records the runtime image, dependencies and matching core source hashes.
+The local runtime and GitHub runner have different resources; their rates are not a controlled
+hardware comparison. A 15-minute soak does not establish multi-hour/day stability.
+
+The separate [controlled-load workflow](.github/workflows/load.yml) offers 20,000 synthetic
+deliveries at 100/second: 10% repeated deliveries and 5% missing-identity inputs. Three workers
+consume three partitions. It can be started from **Actions → controlled-load → Run workflow**;
+changes to the verifier/workflow also trigger it. It is separate from the fast per-commit checks.
+
+`controlled-load-evidence` contains the report, five-second lag/RSS/CPU/disk samples, raw
+archives with manifests, metrics and service diagnostics. Final checks independently reconcile
+archive integrity, unique DB key coverage, every sink source partition/offset and durable
+acknowledgments. Rejected fixture inputs are expected, and do not mean the workload failed.
+
+For a bounded live Wikimedia soak on the Docker internal network, after the quickstart:
+
+```powershell
+docker compose build quality-consumer
+docker compose run --rm --no-deps -T -v ./data:/workspace/data quality-consumer `
+    python -m scripts.verify_sustained --mode live --seconds 900 --count 60000 --drain 180
+```
+
+This uses UUID topics/groups and keeps raw/DB evidence under `data/sustained_runs/`; it does
+not reset operational offsets or old records. It stops ingestion before waiting for consumers
+to drain. The verifier guards free space on its data filesystem; monitor the host Docker disk
+separately as well. Successful runs delete only their UUID Kafka resources; failed runs retain
+them for investigation. Reconciliation and network shutdown add time beyond the source limit.
+
+These are bounded experiments at the recorded input rate and duration. RSS is process memory,
+not total Docker memory; sampling and a short soak cannot establish absence of leaks, maximum
+capacity, HA or a production SLA.
+
 ## Recovery and maintenance
 
 ### Fault experiments
@@ -373,7 +444,7 @@ path migration before Linux tasks can access them.
 
 Known limitations:
 
-- Single-broker local deployment; no HA, production SLA or long-duration capacity proof.
+- Single-broker local deployment; no HA, production SLA or multi-hour/day capacity proof.
 - Trusted local UI and development accounts/secret settings; no public multi-user authentication
   or production secret hardening.
 - Canary events are not yet separated from business quality metrics and can enter quarantine.
