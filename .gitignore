@@ -46,6 +46,7 @@ data/pipeline_runs/
 data/phase7_packaging/
 data/collection_runs/
 data/test_tmp/
+data/sustained_runs/
 
 # IDE
 .idea/
