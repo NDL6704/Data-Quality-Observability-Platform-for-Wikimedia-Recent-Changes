@@ -354,8 +354,7 @@ All nine live reconciliation checks passed. The SSE server closed one connection
 the client retried and returned to HTTP 200 approximately two seconds later. Every event
 received by the application was reconciled; this does not prove completeness of all upstream
 Wikimedia events during the disconnect. The source and all run-owned consumers stopped after
-the bounded run. Raw archives, reports, metrics and five-second samples were retained locally.
-Local provenance records the runtime image, dependencies and matching core source hashes.
+the bounded run.
 The local runtime and GitHub runner have different resources; their rates are not a controlled
 hardware comparison. A 15-minute soak does not establish multi-hour/day stability.
 
@@ -377,8 +376,8 @@ docker compose run --rm --no-deps -T -v ./data:/workspace/data quality-consumer 
     python -m scripts.verify_sustained --mode live --seconds 900 --count 60000 --drain 180
 ```
 
-This uses UUID topics/groups and keeps raw/DB evidence under `data/sustained_runs/`; it does
-not reset operational offsets or old records. It stops ingestion before waiting for consumers
+This uses UUID topics/groups without resetting operational offsets or existing records.
+It stops ingestion before waiting for consumers
 to drain. The verifier guards free space on its data filesystem; monitor the host Docker disk
 separately as well. Successful runs delete only their UUID Kafka resources; failed runs retain
 them for investigation. Reconciliation and network shutdown add time beyond the source limit.
