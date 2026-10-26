@@ -24,6 +24,9 @@ def run_child(env: FaultEnvironment, mode: str, report: ScenarioReport) -> None:
         "KAFKA_CONSUMER_GROUP_QUALITY": env.settings.kafka_consumer_group_quality,
         "QUALITY_MAX_RETRIES": 0,
     }
+    creationflags = 0
+    if sys.platform == "win32":
+        creationflags = subprocess.CREATE_NO_WINDOW
     with (env.directory / f"{mode}.log").open("w", encoding="utf-8") as log:
         child = subprocess.Popen(
             [
@@ -39,7 +42,7 @@ def run_child(env: FaultEnvironment, mode: str, report: ScenarioReport) -> None:
             ],
             stdout=log,
             stderr=subprocess.STDOUT,
-            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
+            creationflags=creationflags,
         )
         try:
             deadline = time.monotonic() + 40
