@@ -1,5 +1,7 @@
 # Wikimedia Recent Changes · Data Quality & Observability
 
+[![quality](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/workflows/ci.yml)
+
 A self-hosted streaming data platform for Wikimedia Recent Changes, built to make data
 validation, delivery failures and recovery behavior explicit and verifiable.
 
@@ -277,8 +279,13 @@ remains. Successful runs remove their Kafka resources; failed runs retain them f
 manual dispatch. It installs project extras, runs Ruff/Mypy and offline unit/contract tests, then
 uploads JUnit results. It does not provision the full streaming stack.
 
-Local CI-equivalent commands have passed; a hosted GitHub run is **not yet confirmed**. Automated
-CD is not implemented. Dependencies use ranges rather than a frozen lock. Host Mypy excludes
+Hosted CI has passed on Ubuntu with Python 3.12: Ruff, Mypy and 206 offline unit/contract tests.
+See the [verified run](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/runs/40258993764)
+and download its `test-results` JUnit artifact. This scope is separate from the full local
+pipeline acceptance results above. To follow future runs, open **Actions → quality → checks**
+and expand each step for its logs. GitHub-hosted runs continue independently of the local PC.
+
+Automated CD is not implemented. Dependencies use ranges rather than a frozen lock. Host Mypy excludes
 Airflow DAG files; their runtime verification is separate.
 
 ## Recovery and maintenance
