@@ -276,14 +276,31 @@ remains. Successful runs remove their Kafka resources; failed runs retain them f
 ### GitHub Actions
 
 [The workflow](.github/workflows/ci.yml) runs Python 3.12 on Ubuntu for pushes, pull requests and
-manual dispatch. It installs project extras, runs Ruff/Mypy and offline unit/contract tests, then
-uploads JUnit results. It does not provision the full streaming stack.
+manual dispatch, with two independent jobs:
 
-Hosted CI has passed on Ubuntu with Python 3.12: Ruff, Mypy and 206 offline unit/contract tests.
-See the [verified run](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/runs/40258993764)
-and download its `test-results` JUnit artifact. This scope is separate from the full local
+| Job | Scope | Artifact |
+|---|---|---|
+| `checks` | Ruff, Mypy and 206 offline unit/contract tests | `test-results` |
+| `Kafka and PostgreSQL integration` | Real Kafka 3.8 KRaft/PostgreSQL 16, migrations and 46 integration/recovery tests | `integration-evidence` |
+
+The integration job starts fresh containers, waits for health checks and applies migrations.
+It verifies accepted/DLQ routing, curated deduplication, transaction rollback, offset handling
+after failures, redelivery and concurrent quarantine replay. Fixtures are deterministic;
+the source starts at Kafka rather than the live Wikimedia SSE endpoint. Boundary failures
+are injected exceptions, rather than the full process-kill fault suite.
+
+JUnit, container status and service logs are uploaded before ephemeral CI services and volumes
+are removed. This job does not start dashboards, Airflow or the monitoring stack and does not
+measure sustained capacity. The cleanup applies only to the temporary GitHub runner.
+
+Hosted CI has passed on Ubuntu with Python 3.12: Ruff, Mypy, 206 offline unit/contract tests
+and 46 tests against real Kafka/PostgreSQL. See the
+[verified run](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/runs/40263781513)
+and download its `test-results` and `integration-evidence` artifacts. This scope is separate from the full local
 pipeline acceptance results above. To follow future runs, open **Actions → quality → checks**
-and expand each step for its logs. GitHub-hosted runs continue independently of the local PC.
+and expand each step for its logs. Select **Kafka and PostgreSQL integration** to inspect the
+service and integration steps; its artifact contains JUnit and diagnostics. GitHub-hosted runs
+continue independently of the local PC.
 
 Automated CD is not implemented. Dependencies use ranges rather than a frozen lock. Host Mypy excludes
 Airflow DAG files; their runtime verification is separate.
