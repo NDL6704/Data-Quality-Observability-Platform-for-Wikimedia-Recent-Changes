@@ -1,5 +1,16 @@
 # Wikimedia Recent Changes · Data Quality & Observability
 
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Apache Kafka 3.8](https://img.shields.io/badge/Apache_Kafka-3.8-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)](https://kafka.apache.org/)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+
+[![Prometheus metrics](https://img.shields.io/badge/Prometheus-Metrics-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana dashboards](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)](https://grafana.com/oss/grafana/)
+[![Streamlit console](https://img.shields.io/badge/Streamlit-Console-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Apache Airflow optional](https://img.shields.io/badge/Apache_Airflow-Optional-017CEE?style=for-the-badge&logo=apacheairflow&logoColor=white)](https://airflow.apache.org/)
+
+[![GitHub Actions CI](https://img.shields.io/badge/GitHub_Actions-CI-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions)
 [![quality](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NDL6704/Data-Quality-Observability-Platform-for-Wikimedia-Recent-Changes/actions/workflows/ci.yml)
 
 A self-hosted streaming data platform for Wikimedia Recent Changes, built to make data
